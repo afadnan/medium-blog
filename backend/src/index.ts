@@ -11,16 +11,10 @@ const app = new Hono<{
 }>()
 
 //middleware
-app.use('/api/v1/blog/*' ,async(c,next) => {
-  const header = c.req.header("authorization") || "";
-  const token = header.split(" ")[1];// Authorization bearer "token123.."
-  const response = await verify(token, c.env.JWT_SECRET);
-  if(response.id) {
-    next()
-  }else {
-    c.status(403)
-    return c.json({error: "unauthorized"})
-  }
+
+
+app.get('/', (c) => {
+  return c.text('Blog WEbsite');
 })
 
 
@@ -80,6 +74,10 @@ app.put('/api/v1/blog', (c) => {
 
 app.get('/api/v1/blog', (c) => {
   return c.text('Blog-get')
+})
+
+app.get('/api/v1/blog/blog', (c) => {
+  return c.text('get-all-Blog-get')
 })
 
 export default app
