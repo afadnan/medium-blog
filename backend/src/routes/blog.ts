@@ -16,47 +16,66 @@ export const blogRouter = new Hono<{
 // })
 
 blogRouter.post("/", async (c) => {
-    const body = await c.req.json();
-    const prisma = new PrismaClient({
-        datasourceUrl : c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+  const body = await c.req.json();
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
 
-    const blog = await prisma.blog.create({
-        data: {
-            title : body.title,
-            content : body.content,
-            authorId : 1
-        }
-    })
+  const blog = await prisma.blog.create({
+    data: {
+      title: body.title,
+      content: body.content,
+      authorId: 1,
+    },
+  });
   return c.json({
-    id : blog.id
+    id: blog.id,
   });
 });
 
 //put -> change the content and title
-blogRouter.put("/",async (c) => {
-    const body = await c.req.json();
-    const prisma = new PrismaClient({
-        datasourceUrl : c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+blogRouter.put("/", async (c) => {
+  const body = await c.req.json();
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
 
-    const blog = await prisma.blog.update({
-        where: {
-            id : body.id
-        },
-        data: {
-            title : body.title,
-            content : body.content,
-            authorId : 1
-        }
-    })
+  const blog = await prisma.blog.update({
+    where: {
+      id: body.id,
+    },
+    data: {
+      title: body.title,
+      content: body.content,
+      authorId: 1,
+    },
+  });
   return c.json({
-    id : blog.id
+    id: blog.id,
   });
 });
 
-blogRouter.get("/", (c) => {
-  return c.text("Blog-get");
+blogRouter.get("/", async (c) => {
+  const body = await c.req.json();
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const blog = await prisma.blog.findFirst({
+      where: {
+        id: body.id,
+      },
+    });
+    return c.json({
+      blog,
+    });
+  } catch (e) {
+    c.status(411);
+    return c.json({
+      message: "Error while fetching blog post",
+    });
+  }
 });
 
 blogRouter.get("/blog", (c) => {
