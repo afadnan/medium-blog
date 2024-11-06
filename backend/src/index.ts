@@ -18,29 +18,32 @@ app.get('/', (c) => {
 })
 
 
-app.post('/api/v1/signup',async (c) => {
+app.post('/api/v1/user/signup',async (c) => {
+  const body = await c.req.json();
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
 }).$extends(withAccelerate());
 
-  const body = await c.req.json();
-  const user = await prisma.user.create({
+  try {
+    
+  const user= await prisma.user.create({
     data : {
-      email : body.email,
+      name:body.name,
+      username : body.username,
       password: body.password,
-    },
-  })
+    }}
+  )
+  const jwt = await sign({
+    id : user.id
+  },c.env.JWT_SECRET);
 
-  const token = await sign({user: user.id},"c.env.JWT_SECRET")
-  return c.json({
-    jwt: token
-  })
-  if(!token){
-    c.status(403);
-    return c.json({
-      error:"Signup First with unique email"
-    })
+  return c.text(`U are signed up & your token is ${jwt}`)
+  
+  } catch (e) {
+    c.status(411);
+    return c.text('Invalid');
   }
+  
 })
 
 app.post('/api/v1/signin', async (c) => {
@@ -51,7 +54,7 @@ app.post('/api/v1/signin', async (c) => {
 	const body = await c.req.json();
 	const user = await prisma.user.findUnique({
 		where: {
-			email: body.email
+			username: body.username
 		}
 	});
 
