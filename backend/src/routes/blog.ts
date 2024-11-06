@@ -17,14 +17,21 @@ export const blogRouter = new Hono<{
 //middleware
 blogRouter.use("/*", async (c, next) => {
   const authHeader = c.req.header("authorization") || "";
-  const user = await verify(authHeader, c.env.JWT_SECRET);
+  try {
+    const user = await verify(authHeader, c.env.JWT_SECRET);
   if (user) {
     c.set("userId", String(user.id));
-    return next();
+    await next();
   } else {
     c.status(403);
     return c.json({
       message: "You are not Authenticated",
+    });
+  }
+  } catch (e) {
+    c.status(403);
+    return c.json({
+      message: "You are not Logged In",
     });
   }
 });
@@ -71,8 +78,20 @@ blogRouter.put("/", async (c) => {
   });
 });
 
-blogRouter.get("/", async (c) => {
-  const body = await c.req.json();
+//Todo: add pagination
+blogRouter.get("/allBlogs", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+  const blogs = await prisma.blog.findMany();
+
+  return c.json({
+    blogs,
+  });
+});
+
+blogRouter.get("/:id", async (c) => {
+  const id = c.req.param("id");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -80,7 +99,7 @@ blogRouter.get("/", async (c) => {
   try {
     const blog = await prisma.blog.findFirst({
       where: {
-        id: body.id,
+        id: Number(id),
       },
     });
     return c.json({
@@ -92,16 +111,4 @@ blogRouter.get("/", async (c) => {
       message: "Error while fetching blog post",
     });
   }
-});
-
-//Todo: add pagination
-blogRouter.get("/allBlogs", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-  const blogs = await prisma.blog.findMany();
-
-  return c.json({
-    blogs,
-  });
 });
