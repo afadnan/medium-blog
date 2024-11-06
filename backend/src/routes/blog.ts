@@ -1,3 +1,5 @@
+import { PrismaClient } from "@prisma/client/edge";
+import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 
 export const blogRouter = new Hono<{
@@ -6,13 +8,32 @@ export const blogRouter = new Hono<{
     JWT_SECRET: string;
   };
 }>();
-blogRouter.post("/", (c) => {
-  return c.text("Blog");
+
+//for Authentication use Middlewares
+//middleware
+// blogRouter.use("/*", (c, next)=> {
+//     next()
+// })
+
+blogRouter.post("/", async (c) => {
+    const body = await c.req.json();
+    const prisma = new PrismaClient({
+        datasourceUrl : c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const blog = await prisma.blog.create({
+        data: {
+            title : body.title,
+            content : body.content,
+            authorId : 1
+        }
+    })
+  return c.json({
+    id : blog.id
+  });
 });
 
-blogRouter.put("/", (c) => {
-  return c.text("Blog-put");
-});
+
 
 blogRouter.get("/", (c) => {
   return c.text("Blog-get");
