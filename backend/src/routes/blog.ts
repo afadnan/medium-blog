@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
+import { signupInput } from "./zod";
 
 export const blogRouter = new Hono<{
   Bindings: {
@@ -38,6 +39,7 @@ blogRouter.use("/*", async (c, next) => {
 
 blogRouter.post("/", async (c) => {
   const body = await c.req.json();
+  const {success} = signupInput.safeParse(body)
   //get userId from the middleware
   const authorId = c.get("userId");
   const prisma = new PrismaClient({
