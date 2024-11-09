@@ -12,18 +12,18 @@ const BlogCard = ({
   publishedDate,
 }: BlogCardProps) => {
   return (
-    <div>
+    <div className="pb-4 border border-slate-200">
       < div className="flex">
         <div className="flex justify-center flex-col"><Avatar name={authName} /></div>
         
-        <div className="font-extralight pl-2">{authName} </div>
+        <div className="font-extralight text-base pl-2">{authName} </div>
         <div className="pl-2 flex justify-center flex-col "> <Circle/></div>
         <div className="pl-2 font-thin text-slate-400">{publishedDate}</div> 
       </div>
-      <div>{title}</div>
-      <div>{content.slice(0, 150) + " ..."}</div>
-      <div>{`${Math.ceil(content.length / 100)} minutes`}</div>
-      <div className="bg-slate-200 h-0.5 w-full"></div>
+      <div className="text-xl font-semibold pt-2">{title}</div>
+      <div className="text-sm font-extralight">{content.slice(0, 150) + " ..."}</div>
+      <div className="text-slate-400 text-sm font-thin pt-4">{`${Math.ceil(content.length / 100)} minute(s) read`} </div>
+      
     </div>
   );
 };
