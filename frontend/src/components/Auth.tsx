@@ -27,7 +27,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
             </div>
           </div>
           <div className="mt-10">
-            <LabelledInput
+           {type === "signup" ?  <LabelledInput
               label="Name"
               placeholder="Adnan Ashraf..."
               onChange={(e) => {
@@ -36,7 +36,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
                   name: e.target.value,
                 });
               }}
-            />
+            /> : null }
 
             <LabelledInput
               label="Username"
@@ -72,7 +72,6 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     </div>
   );
 };
-
 interface LabelledInputType {
   label: string;
   placeholder: string;
