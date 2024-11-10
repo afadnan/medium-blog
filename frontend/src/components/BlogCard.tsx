@@ -12,7 +12,7 @@ const BlogCard = ({
   publishedDate,
 }: BlogCardProps) => {
   return (
-    <div className="p-4 border-b border-slate-200">
+    <div className="p-4 border-b border-slate-200 w-screen max-w-screen-md cursor-pointer">
       < div className="flex">
         <div className="flex justify-center flex-col"><Avatar2 name={authName} /></div>
         
