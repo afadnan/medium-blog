@@ -39,7 +39,7 @@ userRouter.post("/signup", async (c) => {
       c.env.JWT_SECRET
     );
 
-    return c.text(`U are signed up & your token is ${jwt}`);
+    return c.text(`${jwt}`);
   } catch (e) {
     c.status(411);
     return c.text("Invalid");
@@ -77,7 +77,7 @@ userRouter.post("/signin", async (c) => {
       c.env.JWT_SECRET
     );
 
-    return c.text(`U are signed In & your token is ${jwt}`);
+    return c.text(`${jwt}`);
   } catch (e) {
     c.status(411);
     return c.text("Invalid");
