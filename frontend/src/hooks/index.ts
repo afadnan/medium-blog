@@ -27,10 +27,10 @@ export const useBlog = ({id }: {id : string}) => {
         })
     },[id])
 
-    return (
+    return {
         loading,
-        setBlog
-    )
+        blog
+    }
 
 
 }
